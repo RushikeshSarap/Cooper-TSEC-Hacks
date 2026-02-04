@@ -1,5 +1,5 @@
-import { Response } from "express";
-import { AuthRequest } from "../middleware/auth.middleware";
+import type { Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware";
 
 export const createEvent = async (req: AuthRequest, res: Response) => {
   const { name } = req.body;
