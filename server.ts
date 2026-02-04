@@ -10,14 +10,20 @@ dotenv.config();
 const REQUIRED_ENV_VARS = ["PORT", "JWT_SECRET"];
 REQUIRED_ENV_VARS.forEach((key) => {
   if (!process.env[key]) {
-    throw new Error(`❌ Missing required env variable: ${key}`);
+    throw new Error(`Missing required env variable: ${key}`);
   }
 });
 
 const PORT = Number(process.env.PORT);
 
+// Database Connection
+import { connectDB } from "./config/db.config";
+
 // Initialize Express app
 const app: Application = express();
+
+// Connect to Database
+connectDB();
 
 /* =========================
    Global Middlewares
