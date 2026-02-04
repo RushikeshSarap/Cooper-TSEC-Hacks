@@ -1,4 +1,4 @@
-import { JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "../server/node_modules/@types/jsonwebtoken";
 
 declare global {
   namespace Express {
