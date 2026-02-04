@@ -5,7 +5,7 @@ export const allowSelf = (
   res: Response,
   next: NextFunction
 ) => {
-  const tokenUserId = req.user?.id;
+  const tokenUserId= req.user?.id;
   const paramUserId = Number(req.params.id);
 
   if (!tokenUserId || tokenUserId !== paramUserId) {
