@@ -38,6 +38,7 @@ export const addPayment = async (req: Request, res: Response) => {
   }
 };
 
+
 export const createEvent = async (req: Request, res: Response) => {
   const { name, description } = req.body;
 
