@@ -83,12 +83,12 @@ router.get(
 
 /* ───────────── Wallet / deposits ───────────── */
 
-router.post(
-  "/:eventId/deposit",
-  authenticate,
-  requireEventParticipant,
-  controller.depositToEvent
-);
+// router.post(
+//   "/:eventId/deposit",
+//   authenticate,
+//   requireEventParticipant,
+//   controller.depositToEvent
+// );
 
 router.get(
   "/:eventId/wallet",
@@ -97,12 +97,12 @@ router.get(
   controller.getWallet
 );
 
-router.get(
-  "/:eventId/deposits",
-  authenticate,
-  requireEventParticipant,
-  controller.getDeposits
-);
+// router.get(
+//   "/:eventId/deposits",
+//   authenticate,
+//   requireEventParticipant,
+//   controller.getDeposits
+// );
 
 /* ───────────── Rules & categories ───────────── */
 
@@ -138,8 +138,8 @@ router.get(
 
 router.post(
   "/:eventId/payments",
-  authenticate,
-  requireEventParticipant,
+  // authenticate,
+  // requireEventParticipant,
   controller.addPayment
 );
 

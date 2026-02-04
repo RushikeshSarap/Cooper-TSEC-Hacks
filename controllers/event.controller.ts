@@ -1,5 +1,42 @@
 import type { Request, Response } from "express";
 import db from "../config/db.config";
+import { createPaymentIntent, getPaymentIntent } from "../services/finternet.service";
+
+export const addPayment = async (req: Request, res: Response) => {
+  // let amount: string = "10";
+  // let currency: string = "USD";
+  // let description: string = "Event payment";
+  const { amount, currency, description } = req.body;
+  const { eventId } = req.params;
+
+  // const userId = 1;
+
+  if (!amount || !currency) {
+    return res.status(400).json({ error: "Amount and currency required" });
+  }
+
+  try {
+    // 1️⃣ Create a payment intent on Finternet
+    const paymentIntent = await createPaymentIntent(amount, currency, description);
+
+    // 2️⃣ Save intent.id, eventId, userId in your DB
+    await db.query(
+      "INSERT INTO event_payments (event_id, user_id, intent_id, amount, status) VALUES (?, ?, ?, ?, ?)",
+      [eventId, req.user!.id, paymentIntent.id, amount, paymentIntent.status]
+    );
+
+    // 3️⃣ Return the payment URL to frontend
+    res.json({
+      paymentUrl: paymentIntent.paymentUrl,
+      intentId: paymentIntent.id,
+      status: paymentIntent.status,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create payment" });
+    res.end();
+  }
+};
 
 export const createEvent = async (req: Request, res: Response) => {
   const { name, description } = req.body;
@@ -179,21 +216,32 @@ export const getRules = async (req: Request, res: Response) => {
 };
 
 /* Payments & settlement */
-export const addPayment = async (req: Request, res: Response) => {
-  await db.query(
-    "INSERT INTO payments (event_id, payer_id, amount) VALUES (?, ?, ?)",
-    [req.params.eventId, req.user!.id, req.body.amount]
-  );
-  res.json({ message: "Payment added" });
+
+
+export const getPayments = async (req: Request, res: Response): Promise<void> => {
+  const { eventId } = req.params;
+
+  try {
+    const payments: any[] = await db.query(
+      "SELECT * FROM event_payments WHERE event_id = ?",
+      [eventId]
+    );
+
+    // Optional: fetch real-time status from Finternet
+    for (let p of payments) {
+      if (p.status !== "SUCCESS") {
+        const intent = await getPaymentIntent(p.intent_id);
+        p.status = intent.status; // update status if changed
+      }
+    }
+
+    res.json(payments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch payments" });
+  }
 };
 
-export const getPayments = async (req: Request, res: Response) => {
-  const [rows]: any = await db.query(
-    "SELECT * FROM payments WHERE event_id = ?",
-    [req.params.eventId]
-  );
-  res.json(rows);
-};
 
 export const settleEvent = async (req: Request, res: Response) => {
   // settlement logic placeholder
