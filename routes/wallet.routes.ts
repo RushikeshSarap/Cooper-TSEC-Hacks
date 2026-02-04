@@ -1,10 +1,30 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
+import { authenticate, AuthRequest } from "../middleware/auth.middleware";
 
 const router = Router();
 
-// Wallet routes will be implemented here
-router.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Get wallets endpoint" });
-});
+router.post(
+  "/:eventId/deposit",
+  authenticate,
+  async (req: AuthRequest, res: Response) => {
+    const { amount } = req.body;
+
+    res.json({
+      eventId: req.params.eventId,
+      deposited: amount
+    });
+  }
+);
+
+router.get(
+  "/:eventId",
+  authenticate,
+  async (req: AuthRequest, res: Response) => {
+    res.json({
+      eventId: req.params.eventId,
+      balance: 0
+    });
+  }
+);
 
 export default router;

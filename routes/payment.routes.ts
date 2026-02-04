@@ -1,10 +1,29 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
+import { authenticate, AuthRequest } from "../middleware/auth.middleware";
 
 const router = Router();
 
-// Payment routes will be implemented here
-router.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Get payments endpoint" });
-});
+router.post(
+  "/:eventId/pay",
+  authenticate,
+  async (req: AuthRequest, res: Response) => {
+    const { amount, categoryId } = req.body;
+
+    res.json({
+      eventId: req.params.eventId,
+      categoryId,
+      amount,
+      status: "PAID"
+    });
+  }
+);
+
+router.get(
+  "/:eventId",
+  authenticate,
+  async (req: AuthRequest, res: Response) => {
+    res.json({ payments: [] });
+  }
+);
 
 export default router;

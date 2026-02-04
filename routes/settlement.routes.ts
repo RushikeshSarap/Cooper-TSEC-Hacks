@@ -1,10 +1,27 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
+import { authenticate, AuthRequest } from "../middleware/auth.middleware";
 
 const router = Router();
 
-// Settlement routes will be implemented here
-router.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Get settlements endpoint" });
-});
+router.post(
+  "/:eventId/settle",
+  authenticate,
+  async (req: AuthRequest, res: Response) => {
+    res.json({
+      eventId: req.params.eventId,
+      status: "SETTLED"
+    });
+  }
+);
+
+router.get(
+  "/:eventId",
+  authenticate,
+  async (req: AuthRequest, res: Response) => {
+    res.json({
+      settlements: []
+    });
+  }
+);
 
 export default router;
