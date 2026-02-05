@@ -1,4 +1,3 @@
-import type { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 import type  { Request, Response, NextFunction } from "express";
 import type { AuthJwtPayload } from "../types/auth.types";
@@ -7,7 +6,8 @@ import type { AuthJwtPayload } from "../types/auth.types";
 // extend Request type
 declare module "express-serve-static-core" {
   interface Request {
-    user?: string | JwtPayload;
+    user?: string | AuthJwtPayload;
+    
   }
 }
 
