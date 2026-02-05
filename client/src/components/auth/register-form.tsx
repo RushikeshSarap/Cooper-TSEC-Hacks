@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios"; // ✅ Import axios
+import api from "@/services/api"; // ✅ Use centralized API
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from "lucide-react";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -9,10 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router";
-
-const BACKEND_AUTH_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/auth/register`
-  : "http://localhost:5000/api/v1/auth/register";
 
 // ✅ If using Next.js, use `next/link` instead:
 // import Link from "next/link"
@@ -29,7 +25,7 @@ export function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // ✅ Backend connection using axios
+  // ✅ Backend connection using centralized API service
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -43,8 +39,8 @@ export function RegisterForm() {
     }
 
     try {
-      // ✅ Change this URL to your backend endpoint
-      const response = await axios.post(BACKEND_AUTH_URL, {
+      // ✅ Use centralized API service
+      const response = await api.post("/auth/register", {
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -60,11 +56,13 @@ export function RegisterForm() {
           password: "",
           confirmPassword: "",
         });
-        window.location.href = "/login"; // Redirect to dashboard on success
+        window.location.href = "/login"; // Redirect to login on success
       }
     } catch (err: any) {
-      // ✅ Handle backend error messages
-      if (err.response && err.response.data && err.response.data.message) {
+      // ✅ Handle network errors specifically
+      if (err.isNetworkError) {
+        setError("Network error. Please check your internet connection and try again.");
+      } else if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else {
         setError("Something went wrong. Please try again.");

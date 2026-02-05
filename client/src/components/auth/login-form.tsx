@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
+import api from "@/services/api"; // ✅ Use centralized API
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -28,8 +28,8 @@ export function LoginForm() {
     setSuccess(null);
 
     try {
-      // ✅ Send login request to backend API
-      const response = await axios.post("import.meta.env.VITE_API_URLv1/auth/login", {
+      // ✅ Use centralized API service with proper endpoint
+      const response = await api.post("/auth/login", {
         email: formData.email,
         password: formData.password,
       });
@@ -50,7 +50,10 @@ export function LoginForm() {
         }, 1000);
       }
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.message) {
+      // ✅ Handle network errors specifically
+      if (err.isNetworkError) {
+        setError("Network error. Please check your internet connection and try again.");
+      } else if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else {
         setError("Login failed. Please check your credentials.");
