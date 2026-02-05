@@ -2,6 +2,8 @@ import express from "express";
 import type { Application, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { initSchema } from "./config/initSchema";
+import { connectDB } from "./config/db.config";
 
 // Load environment variables
 dotenv.config();
@@ -16,14 +18,8 @@ REQUIRED_ENV_VARS.forEach((key) => {
 
 const PORT = Number(process.env.PORT);
 
-// Database Connection
-import { connectDB } from "./config/db.config";
-
 // Initialize Express app
 const app: Application = express();
-
-// Connect to Database
-connectDB();
 
 /* =========================
    Global Middlewares
@@ -54,7 +50,6 @@ app.get("/health", (req: Request, res: Response) => {
    API Routes
 ========================= */
 
-// (Routes will be implemented later)
 import authRoutes from "./routes/auth.routes";
 import eventRoutes from "./routes/event.routes";
 import ruleRoutes from "./routes/rule.routes";
@@ -62,14 +57,12 @@ import userRoutes from "./routes/user.routes";
 import categoryRoutes from "./routes/category.routes";
 import walletRoutes from "./routes/wallet.routes";
 
-
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/rules", ruleRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/wallet", walletRoutes);
-
 
 /* =========================
    404 Handler
@@ -101,9 +94,22 @@ app.use(
 );
 
 /* =========================
-   Start Server
+   Start Server (FIXED)
 ========================= */
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    await initSchema();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("❌ Startup failed:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

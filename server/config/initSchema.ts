@@ -1,5 +1,10 @@
--- SQLINES FOR EVALUATION USE ONLY (14 DAYS)
-CREATE TABLE users (
+import pool from "./db.config";
+
+export const initSchema = async () => {
+  try {
+    await pool.query(`
+
+CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
@@ -7,7 +12,7 @@ CREATE TABLE users (
     created_at TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(150) NOT NULL,
     description TEXT,
@@ -22,7 +27,7 @@ CREATE TABLE events (
         FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
-CREATE TABLE event_participants (
+CREATE TABLE IF NOT EXISTS event_participants (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -39,7 +44,7 @@ CREATE TABLE event_participants (
     UNIQUE (event_id, user_id)
 );
 
-CREATE TABLE event_wallets (
+CREATE TABLE IF NOT EXISTS event_wallets (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL UNIQUE,
     balance DECIMAL(10,2) DEFAULT 0.00,
@@ -49,7 +54,7 @@ CREATE TABLE event_wallets (
         ON DELETE CASCADE
 );
 
-CREATE TABLE deposits (
+CREATE TABLE IF NOT EXISTS deposits (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -65,7 +70,7 @@ CREATE TABLE deposits (
         FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE expense_categories (
+CREATE TABLE IF NOT EXISTS expense_categories (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -77,7 +82,7 @@ CREATE TABLE expense_categories (
         ON DELETE CASCADE
 );
 
-CREATE TABLE category_participants (
+CREATE TABLE IF NOT EXISTS category_participants (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     category_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -93,7 +98,7 @@ CREATE TABLE category_participants (
     UNIQUE (category_id, user_id)
 );
 
-CREATE TABLE bills (
+CREATE TABLE IF NOT EXISTS bills (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     category_id BIGINT NOT NULL,
     image_url TEXT NOT NULL,
@@ -109,7 +114,7 @@ CREATE TABLE bills (
         FOREIGN KEY (uploaded_by) REFERENCES users(id)
 );
 
-CREATE TABLE payment_rules (
+CREATE TABLE IF NOT EXISTS payment_rules (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     max_amount DECIMAL(10,2),
@@ -121,7 +126,7 @@ CREATE TABLE payment_rules (
         ON DELETE CASCADE
 );
 
-CREATE TABLE payments (
+CREATE TABLE IF NOT EXISTS payments (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     category_id BIGINT,
@@ -140,7 +145,7 @@ CREATE TABLE payments (
         FOREIGN KEY (paid_by) REFERENCES users(id)
 );
 
-CREATE TABLE settlements (
+CREATE TABLE IF NOT EXISTS settlements (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -157,3 +162,12 @@ CREATE TABLE settlements (
 
     UNIQUE (event_id, user_id)
 );
+
+
+    `);
+
+    console.log("✅ Schema created");
+  } catch (err) {
+    console.error("❌ Schema error:", err);
+  }
+};
