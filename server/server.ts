@@ -96,7 +96,7 @@ app.use("/api", (req: Request, res: Response) => {
 ========================= */
 
 // All other GET requests not handled before will return our React app
-app.get("*", (req: Request, res: Response) => {
+app.get("(.*)", (req: Request, res: Response) => {
   res.sendFile(path.join(clientBuildPath, "index.html"), (err) => {
     if (err) {
       // If index.html is missing (e.g. no build), fall back to 404 JSON
