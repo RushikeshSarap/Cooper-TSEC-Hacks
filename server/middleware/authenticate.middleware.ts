@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type  { Request, Response, NextFunction } from "express";
-import type { AuthJwtPayload } from "../types/auth.types";
+import type { AuthJwtPayload } from "../types/auth.types.js";
 
 
 // extend Request type

@@ -1,4 +1,4 @@
-import { getAccountBalance, getLedgerEntries, createPaymentIntent } from "./finternet.service";
+import { getAccountBalance, getLedgerEntries, createPaymentIntent } from "./finternet.service.js";
 
 export interface Wallet {
   available: number;

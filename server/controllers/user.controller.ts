@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import db from "../config/db.config";
-import { createPaymentIntent } from "../services/finternet.service";
+import db from "../config/db.config.js";
+import { createPaymentIntent } from "../services/finternet.service.js";
 
 // GET /users/:id
 export const getUserById = async (req: Request, res: Response) => {

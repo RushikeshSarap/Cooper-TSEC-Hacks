@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/authenticate.middleware";
-import { allowSelf } from "../middleware/allowSelf.middleware";
+import { authenticate } from "../middleware/authenticate.middleware.js";
+import { allowSelf } from "../middleware/allowSelf.middleware.js";
 import {
   getUserById,
   updateUserById,
   getUserEvents,
   depositToWallet
-} from "../controllers/user.controller";
+} from "../controllers/user.controller.js";
 
 const router = Router();
 

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import pool from "../config/db.config";
+import pool from "../config/db.config.js";
 
 /* ================= REGISTER ================= */
 export const register = async (req: Request, res: Response) => {

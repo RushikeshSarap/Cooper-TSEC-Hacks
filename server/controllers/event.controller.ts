@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import db from "../config/db.config";
-import { createPaymentIntent, getPaymentIntent } from "../services/finternet.service";
+import db from "../config/db.config.js";
+import { createPaymentIntent, getPaymentIntent } from "../services/finternet.service.js";
 
 export const addPayment = async (req: Request, res: Response) => {
   // let amount: string = "10";

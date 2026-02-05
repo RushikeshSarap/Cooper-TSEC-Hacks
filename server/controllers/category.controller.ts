@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
-import db from "../config/db.config";
-
+import db from "../config/db.config.js";
 export const updateCategory = async (req: Request, res: Response) => {
   const { categoryId } = req.params;
   const { name, totalAmount } = req.body;

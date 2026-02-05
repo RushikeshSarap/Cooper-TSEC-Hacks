@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/authenticate.middleware";
-import { validateRuleUpdate } from "../middleware/validateRule.middleware";
-import { updateRule } from "../controllers/rule.controller";
+import { authenticate } from "../middleware/authenticate.middleware.js";
+import { validateRuleUpdate } from "../middleware/validateRule.middleware.js";
+import { updateRule } from "../controllers/rule.controller.js";
 
 const router = Router();
 

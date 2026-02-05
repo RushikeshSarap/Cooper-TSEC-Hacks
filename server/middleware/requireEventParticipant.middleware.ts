@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import db from "../config/db.config";
+import db from "../config/db.config.js";
 
 export const requireEventParticipant = async (
   req: Request,

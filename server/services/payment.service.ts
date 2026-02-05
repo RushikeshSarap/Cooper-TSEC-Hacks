@@ -1,5 +1,5 @@
-import { WalletService } from "./wallet.service";
-import { RuleService } from "./rule.service";
+import { WalletService } from "./wallet.service.js";
+import { RuleService } from "./rule.service.js";
 
 export interface PaymentInput {
   eventId: string;

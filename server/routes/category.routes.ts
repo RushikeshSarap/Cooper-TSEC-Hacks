@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/authenticate.middleware";
-import { isEventParticipant } from "../middleware/isEventParticipant.middleware";
-import { isOrganizer } from "../middleware/isOrganizer.middleware";
+import { authenticate } from "../middleware/authenticate.middleware.js";
+import { isEventParticipant } from "../middleware/isEventParticipant.middleware.js";
+import { isOrganizer } from "../middleware/isOrganizer.middleware.js";
 
 import {
   updateCategory,
@@ -10,7 +10,7 @@ import {
   getCategoryParticipants,
   uploadBill,
   getBills
-} from "../controllers/category.controller";
+} from "../controllers/category.controller.js";
 
 const router = Router();
 

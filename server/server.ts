@@ -2,8 +2,8 @@ import express from "express";
 import type { Application, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { initSchema } from "./config/initSchema";
-import { connectDB } from "./config/db.config";
+import { initSchema } from "./config/initSchema.js";
+import { connectDB } from "./config/db.config.js";
 
 // Load environment variables
 dotenv.config();
@@ -50,12 +50,12 @@ app.get("/health", (req: Request, res: Response) => {
    API Routes
 ========================= */
 
-import authRoutes from "./routes/auth.routes";
-import eventRoutes from "./routes/event.routes";
-import ruleRoutes from "./routes/rule.routes";
-import userRoutes from "./routes/user.routes";
-import categoryRoutes from "./routes/category.routes";
-import walletRoutes from "./routes/wallet.routes";
+import authRoutes from "./routes/auth.routes.js";
+import eventRoutes from "./routes/event.routes.js";
+import ruleRoutes from "./routes/rule.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import walletRoutes from "./routes/wallet.routes.js";
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/events", eventRoutes);

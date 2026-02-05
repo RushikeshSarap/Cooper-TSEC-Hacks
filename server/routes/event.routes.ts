@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/authenticate.middleware";
-import { requireEventOwner } from "../middleware/requireEventOwner.middleware";
-import { requireEventParticipant } from "../middleware/requireEventParticipant.middleware";
-import * as controller from "../controllers/event.controller";
+import { authenticate } from "../middleware/authenticate.middleware.js";
+import { requireEventOwner } from "../middleware/requireEventOwner.middleware.js";
+import { requireEventParticipant } from "../middleware/requireEventParticipant.middleware.js";
+import * as controller from "../controllers/event.controller.js";
 
 const router = Router();
 
