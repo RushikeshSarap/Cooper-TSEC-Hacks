@@ -56,6 +56,7 @@ import ruleRoutes from "./routes/rule.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import walletRoutes from "./routes/wallet.routes.js";
+import chatbotRoutes from "./routes/chatbot.routes.js";
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/events", eventRoutes);
@@ -63,6 +64,7 @@ app.use("/api/v1/rules", ruleRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/wallet", walletRoutes);
+app.use("/api/v1", chatbotRoutes);
 
 /* =========================
    404 Handler

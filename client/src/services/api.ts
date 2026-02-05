@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL || "http://localhost:5000/api/v1";
+const BACKEND_API_URL = process.env.BACKEND_API_URL || "import.meta.env.VITE_API_URLv1";
 
 export const API_URL = BACKEND_API_URL;
 

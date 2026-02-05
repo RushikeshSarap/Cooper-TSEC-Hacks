@@ -18,6 +18,7 @@ import SettlementSummaryPage from './pages/SettlementSummaryPage'
 import EventLedgerPage from './pages/EventLedgerPage'
 import AddExpensePage from './pages/AddExpensePage'
 import WalletPage from './pages/WalletPage'
+import ChatbotPage from './pages/ChatbotPage'
 
 function App() {
     return (
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/wallet" element={<WalletPage />} />
                 <Route path="/wallet/deposit" element={<DepositFundsPage />} />
                 <Route path="/wallet/pay" element={<MakePaymentPage />} />
+                <Route path="/chatbot" element={<ChatbotPage />} />
             </Routes>
         </ErrorBoundary>
     )

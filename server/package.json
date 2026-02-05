@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/RushikeshSarap/Cooper-TSEC-Hacks#readme",
   "dependencies": {
+    "@mistralai/mistralai": "^1.3.7",
     "axios": "^1.13.4",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
