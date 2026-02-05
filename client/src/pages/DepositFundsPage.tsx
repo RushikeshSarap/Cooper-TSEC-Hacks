@@ -174,6 +174,26 @@ export default function DepositFundsPage() {
                                 </div>
                                 {selectedMethod === 'card' && <div className="w-4 h-4 rounded-full bg-primary" />}
                             </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedMethod('upi')}
+                                className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${selectedMethod === 'upi'
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border/50 bg-secondary/20 hover:bg-secondary/40'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center text-white">
+                                        <span className="font-bold text-xs">UPI</span>
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-medium">UPI / GPay</p>
+                                        <p className="text-xs text-muted-foreground">Instant Transfer</p>
+                                    </div>
+                                </div>
+                                {selectedMethod === 'upi' && <div className="w-4 h-4 rounded-full bg-primary" />}
+                            </button>
                         </div>
                     </GlassCard>
 

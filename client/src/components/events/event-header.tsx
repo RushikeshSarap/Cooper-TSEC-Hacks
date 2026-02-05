@@ -19,11 +19,7 @@ export function EventHeader({ event }: EventHeaderProps) {
 
   const progress = (event.currentSpent / event.totalBudget) * 100;
 
-  const statusStyles = {
-    active: "bg-success/10 text-success",
-    settled: "bg-muted text-muted-foreground",
-    pending: "bg-warning/10 text-warning",
-  };
+
 
   return (
     <div className="relative overflow-hidden rounded-2xl gradient-primary p-6 text-white">

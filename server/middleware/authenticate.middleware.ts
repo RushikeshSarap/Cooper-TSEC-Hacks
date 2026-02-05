@@ -11,7 +11,9 @@ declare module "express-serve-static-core" {
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
+  console.log("Auth Middleware: Header:", authHeader); // DEBUG
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    console.log("Auth Middleware: No Bearer token found"); // DEBUG
     return res.status(401).json({ message: "No token provided" });
   }
 

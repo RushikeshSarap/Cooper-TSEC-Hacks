@@ -81,8 +81,10 @@ export const login = async (req: Request, res: Response) => {
 
 /* ================= GET ME ================= */
 export const getMe = async (req: Request, res: Response) => {
+  console.log("Auth Controller: getMe called"); // DEBUG
   try {
-    const userId = (req as any).userId;
+    const userId = (req as any).user.id;
+    console.log("Auth Controller: userId:", userId); // DEBUG
     const [rows]: any = await pool.query(
       "SELECT id, name, email FROM users WHERE id = ?",
       [userId]

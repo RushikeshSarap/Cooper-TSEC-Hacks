@@ -120,7 +120,7 @@ router.get(
 router.post(
   "/:eventId/categories",
   authenticate,
-  requireEventOwner,
+  requireEventParticipant,
   controller.addCategory
 );
 

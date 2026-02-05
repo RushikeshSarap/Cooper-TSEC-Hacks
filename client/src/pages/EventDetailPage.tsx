@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router'
-import { ArrowLeft, Plus, DollarSign, Users as UsersIcon, Settings as SettingsIcon } from 'lucide-react'
+import { ArrowLeft, Plus, DollarSign, Users as UsersIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -8,187 +8,111 @@ import { EventHeader } from '@/components/events/event-header'
 import { ParticipantList } from '@/components/events/participant-list'
 import { CategoryList } from '@/components/events/category-list'
 import { TransactionTimeline } from '@/components/events/transaction-timeline'
-import { SettlementBreakdownTable } from '@/components/payments/settlement-breakdown-table'
-import type { Event, Participant, Category, Transaction, Settlement } from '@/types'
-
-// Mock data for the event
-const mockEvent: Event = {
-    id: "1",
-    name: "Ski Trip 2026",
-    description: "Annual winter ski trip to Aspen",
-    startDate: "2026-02-15",
-    endDate: "2026-02-22",
-    status: "active",
-    totalBudget: 5000,
-    currentSpent: 3250,
-    participantCount: 6,
-    createdBy: "1",
-    createdAt: "2026-01-10",
-}
-
-const mockParticipants: Participant[] = [
-    {
-        id: "1",
-        user: {
-            id: "1",
-            name: "Alex Johnson",
-            email: "alex@example.com",
-            balance: 2847.50,
-        },
-        role: "organizer",
-        depositAmount: 1000,
-        spentAmount: 850,
-        balance: 150,
-        joinedAt: "2026-01-10",
-    },
-    {
-        id: "2",
-        user: {
-            id: "2",
-            name: "Sarah Williams",
-            email: "sarah@example.com",
-            balance: 1200,
-        },
-        role: "member",
-        depositAmount: 800,
-        spentAmount: 950,
-        balance: -150,
-        joinedAt: "2026-01-12",
-    },
-    {
-        id: "3",
-        user: {
-            id: "3",
-            name: "Mike Chen",
-            email: "mike@example.com",
-            balance: 500,
-        },
-        role: "member",
-        depositAmount: 1000,
-        spentAmount: 800,
-        balance: 200,
-        joinedAt: "2026-01-15",
-    },
-]
-
-const mockCategories: Category[] = [
-    {
-        id: "1",
-        name: "Accommodation",
-        icon: "accommodation",
-        color: "#6366f1",
-        budget: 2000,
-        spent: 1800,
-        participantIds: ["1", "2", "3"],
-    },
-    {
-        id: "2",
-        name: "Food & Drinks",
-        icon: "food",
-        color: "#8b5cf6",
-        budget: 1500,
-        spent: 950,
-        participantIds: ["1", "2", "3"],
-    },
-    {
-        id: "3",
-        name: "Ski Passes",
-        icon: "activities",
-        color: "#06b6d4",
-        budget: 1000,
-        spent: 500,
-        participantIds: ["1", "2", "3"],
-    },
-]
-
-const mockTransactions: Transaction[] = [
-    {
-        id: "1",
-        eventId: "1",
-        categoryId: "1",
-        description: "Cabin rental for the week",
-        amount: 1800,
-        paidBy: {
-            id: "1",
-            name: "Alex Johnson",
-            email: "alex@example.com",
-            balance: 2847.50,
-        },
-        splitBetween: [
-            { id: "1", name: "Alex Johnson", email: "alex@example.com", balance: 2847.50 },
-            { id: "2", name: "Sarah Williams", email: "sarah@example.com", balance: 1200 },
-            { id: "3", name: "Mike Chen", email: "mike@example.com", balance: 500 },
-        ],
-        receipt: "/receipts/cabin.jpg",
-        createdAt: "2026-02-15T10:00:00Z",
-        status: "approved",
-    },
-    {
-        id: "2",
-        eventId: "1",
-        categoryId: "2",
-        description: "Grocery shopping for the week",
-        amount: 450,
-        paidBy: {
-            id: "2",
-            name: "Sarah Williams",
-            email: "sarah@example.com",
-            balance: 1200,
-        },
-        splitBetween: [
-            { id: "1", name: "Alex Johnson", email: "alex@example.com", balance: 2847.50 },
-            { id: "2", name: "Sarah Williams", email: "sarah@example.com", balance: 1200 },
-            { id: "3", name: "Mike Chen", email: "mike@example.com", balance: 500 },
-        ],
-        createdAt: "2026-02-16T14:30:00Z",
-        status: "approved",
-    },
-    {
-        id: "3",
-        eventId: "1",
-        categoryId: "3",
-        description: "Ski lift passes - 3 days",
-        amount: 500,
-        paidBy: {
-            id: "3",
-            name: "Mike Chen",
-            email: "mike@example.com",
-            balance: 500,
-        },
-        splitBetween: [
-            { id: "1", name: "Alex Johnson", email: "alex@example.com", balance: 2847.50 },
-            { id: "2", name: "Sarah Williams", email: "sarah@example.com", balance: 1200 },
-            { id: "3", name: "Mike Chen", email: "mike@example.com", balance: 500 },
-        ],
-        createdAt: "2026-02-17T09:00:00Z",
-        status: "pending",
-    },
-]
-
-const mockSettlements: Settlement[] = [
-    {
-        id: "1",
-        eventId: "1",
-        from: {
-            id: "2",
-            name: "Sarah Williams",
-            email: "sarah@example.com",
-            balance: 1200,
-        },
-        to: {
-            id: "1",
-            name: "Alex Johnson",
-            email: "alex@example.com",
-            balance: 2847.50,
-        },
-        amount: 150,
-        status: "pending",
-    },
-]
+import type { Event, Participant, Category, Transaction } from '@/types'
+import { eventService } from '@/services/event.service'
 
 export default function EventDetailPage() {
     const { id } = useParams()
     const [activeTab, setActiveTab] = useState("overview")
+    const [event, setEvent] = useState<Event | null>(null);
+    const [participants, setParticipants] = useState<Participant[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!id) return;
+            try {
+                // Use Promise.allSettled to prevent one failure from blocking everything
+                const results = await Promise.allSettled([
+                    eventService.getById(id),
+                    eventService.getParticipants(id),
+                    eventService.getCategories(id),
+                    eventService.getPayments(id)
+                ]);
+
+                // Check Event Fetch
+                if (results[0].status === 'fulfilled') {
+                    setEvent(results[0].value);
+                } else {
+                    console.error("Failed to fetch event:", results[0].reason);
+                }
+
+                if (results[1].status === 'fulfilled') setParticipants(results[1].value);
+                else console.error("Failed to fetch participants:", results[1].reason);
+
+                if (results[2].status === 'fulfilled') setCategories(results[2].value);
+                else console.warn("Failed to fetch categories:", results[2].reason);
+
+                if (results[3].status === 'fulfilled') setTransactions(results[3].value);
+                else console.warn("Failed to fetch transactions:", results[3].reason);
+
+            } catch (error) {
+                console.error("General fetch error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center">Loading event...</div>
+    }
+
+    if (!event) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                <h2 className="text-xl font-semibold mb-2">Event not found</h2>
+                <p className="text-muted-foreground mb-4">Could not load event details. ID: {id}</p>
+                <Link to="/dashboard">
+                    <Button variant="outline">Back to Dashboard</Button>
+                </Link>
+            </div>
+        )
+    }
+
+    const handleDelete = async () => {
+        if (!event || !confirm("Are you sure you want to delete this event?")) return;
+        try {
+            await eventService.delete(event.id);
+            alert("Event deleted successfully");
+            window.location.href = "/dashboard";
+        } catch (error) {
+            console.error("Delete failed", error);
+            alert("Failed to delete event");
+        }
+    };
+
+    const handleInvite = async () => {
+        const email = prompt("Enter email to invite:");
+        if (!email || !id) return;
+        try {
+            await eventService.inviteUser(id, email);
+            alert("Invitation sent!");
+            // Refresh participants
+            const parts = await eventService.getParticipants(id);
+            setParticipants(parts);
+        } catch (error) {
+            console.error("Invite failed", error);
+            alert("Failed to invite user (User must exist)");
+        }
+    };
+
+    const handleAddCategory = async () => {
+        const name = prompt("Enter category name:");
+        if (!name || !id) return;
+        try {
+            await eventService.addCategory(id, name);
+            // Refresh categories
+            const cats = await eventService.getCategories(id);
+            setCategories(cats);
+        } catch (error) {
+            console.error("Add category failed", error);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background">
@@ -214,7 +138,7 @@ export default function EventDetailPage() {
             {/* Main Content */}
             <main className="container mx-auto px-4 py-6 space-y-6">
                 {/* Event Header */}
-                <EventHeader event={mockEvent} />
+                <EventHeader event={event} />
 
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -239,7 +163,7 @@ export default function EventDetailPage() {
                                             </div>
                                             <div>
                                                 <p className="text-xs text-muted-foreground">Total Spent</p>
-                                                <p className="font-semibold text-foreground">${mockEvent.currentSpent.toLocaleString()}</p>
+                                                <p className="font-semibold text-foreground">${event.currentSpent.toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -250,7 +174,7 @@ export default function EventDetailPage() {
                                             </div>
                                             <div>
                                                 <p className="text-xs text-muted-foreground">Remaining Budget</p>
-                                                <p className="font-semibold text-foreground">${(mockEvent.totalBudget - mockEvent.currentSpent).toLocaleString()}</p>
+                                                <p className="font-semibold text-foreground">${(event.totalBudget - event.currentSpent).toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -261,7 +185,7 @@ export default function EventDetailPage() {
                                             </div>
                                             <div>
                                                 <p className="text-xs text-muted-foreground">Participants</p>
-                                                <p className="font-semibold text-foreground">{mockEvent.participantCount} members</p>
+                                                <p className="font-semibold text-foreground">{event.participantCount} members</p>
                                             </div>
                                         </div>
                                     </div>
@@ -272,23 +196,32 @@ export default function EventDetailPage() {
                             <GlassCard className="p-6">
                                 <h3 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h3>
                                 <div className="space-y-3">
-                                    {mockTransactions.slice(0, 3).map((txn) => (
+                                    {transactions.slice(0, 3).map((txn) => (
                                         <div key={txn.id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/30">
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium text-foreground truncate">{txn.description}</p>
-                                                <p className="text-xs text-muted-foreground">by {txn.paidBy.name}</p>
+                                                <p className="text-xs text-muted-foreground">by {txn.paidBy?.name || 'Unknown'}</p>
                                             </div>
                                             <p className="text-sm font-semibold text-foreground">${txn.amount}</p>
                                         </div>
                                     ))}
+                                    {transactions.length === 0 && (
+                                        <p className="text-sm text-muted-foreground">No recent activity.</p>
+                                    )}
                                 </div>
                             </GlassCard>
                         </div>
 
                         {/* Categories */}
                         <div>
-                            <h3 className="text-lg font-semibold text-foreground mb-4">Budget Categories</h3>
-                            <CategoryList categories={mockCategories} />
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-semibold text-foreground">Budget Categories</h3>
+                                <Button size="sm" variant="outline" onClick={handleAddCategory}>
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Add Category
+                                </Button>
+                            </div>
+                            <CategoryList categories={categories} />
                         </div>
                     </TabsContent>
 
@@ -315,25 +248,25 @@ export default function EventDetailPage() {
                                 </Link>
                             </div>
                         </div>
-                        <TransactionTimeline transactions={mockTransactions} />
+                        <TransactionTimeline transactions={transactions} />
                     </TabsContent>
 
                     {/* Members Tab */}
                     <TabsContent value="members" className="space-y-6 mt-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-foreground">Event Members</h3>
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" onClick={handleInvite}>
                                 <Plus className="w-4 h-4 mr-2" />
                                 Invite Member
                             </Button>
                         </div>
-                        <ParticipantList participants={mockParticipants} />
+                        <ParticipantList participants={participants} />
 
                         <GlassCard className="p-6 text-center">
                             <h4 className="font-semibold text-foreground mb-2">Share Event Code</h4>
                             <p className="text-muted-foreground mb-4">Share this code with others to join the event</p>
                             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary/50 border border-border/50">
-                                <span className="text-2xl font-bold tracking-widest">ABC-123</span>
+                                <span className="text-2xl font-bold tracking-widest">{event.id}</span>
                             </div>
                         </GlassCard>
                     </TabsContent>
@@ -345,32 +278,39 @@ export default function EventDetailPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-sm font-medium text-foreground">Event Name</label>
-                                    <p className="text-sm text-muted-foreground mt-1">{mockEvent.name}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">{event.name}</p>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-foreground">Description</label>
-                                    <p className="text-sm text-muted-foreground mt-1">{mockEvent.description}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-foreground">Budget</label>
-                                    <p className="text-sm text-muted-foreground mt-1">${mockEvent.totalBudget.toLocaleString()}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">${event.totalBudget.toLocaleString()}</p>
                                 </div>
                                 <div>
                                     <label className="text-sm font-medium text-foreground">Status</label>
-                                    <p className="text-sm text-muted-foreground mt-1 capitalize">{mockEvent.status}</p>
+                                    <p className="text-sm text-muted-foreground mt-1 capitalize">{event.status}</p>
                                 </div>
                             </div>
+                            <Button variant="outline" className="mt-4" disabled>Edit (Coming Soon)</Button>
                         </GlassCard>
 
                         <GlassCard className="p-6">
-                            <h3 className="text-lg font-semibold text-foreground mb-4">Categories</h3>
-                            <CategoryList categories={mockCategories} />
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-semibold text-foreground">Categories</h3>
+                                <Button size="sm" variant="outline" onClick={handleAddCategory}>
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Add
+                                </Button>
+                            </div>
+                            <CategoryList categories={categories} />
                         </GlassCard>
 
                         <GlassCard className="p-6 border-destructive/30">
                             <h3 className="text-lg font-semibold text-destructive mb-2">Danger Zone</h3>
                             <p className="text-sm text-muted-foreground mb-4">Once you delete an event, there is no going back.</p>
-                            <Button variant="destructive">Delete Event</Button>
+                            <Button variant="destructive" onClick={handleDelete}>Delete Event</Button>
                         </GlassCard>
                     </TabsContent>
                 </Tabs>

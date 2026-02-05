@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { ArrowLeft, Calendar, Users, DollarSign, Tag } from 'lucide-react'
+import { eventService } from '@/services/event.service'
+import { ArrowLeft, Calendar, Users, DollarSign } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,15 +36,23 @@ export default function CreateEventPage() {
         e.preventDefault()
         setLoading(true)
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        try {
+            const result = await eventService.create({
+                name: formData.name,
+                description: formData.description,
+                startDate: formData.startDate,
+                endDate: formData.endDate,
+                budget: Number(formData.budget),
+            });
 
-        // Mock event creation - would call POST /api/v1/events
-        const mockEventId = Math.random().toString(36).substring(7)
-
-        setLoading(false)
-        // Redirect to event details
-        navigate(`/events/${mockEventId}`)
+            // Redirect to event details
+            navigate(`/events/${result.eventId}`)
+        } catch (error) {
+            console.error("Failed to create event:", error);
+            // You might want to show an error toast here
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleChange = (field: string, value: string) => {

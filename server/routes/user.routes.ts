@@ -4,10 +4,19 @@ import { allowSelf } from "../middleware/allowSelf.middleware";
 import {
   getUserById,
   updateUserById,
-  getUserEvents
+  getUserEvents,
+  depositToWallet
 } from "../controllers/user.controller";
 
 const router = Router();
+
+// POST /users/wallet/deposit (Global deposit for logged in user)
+// Place this BEFORE /:id to avoid conflict if :id captures "wallet"
+router.post(
+  "/wallet/deposit",
+  authenticate,
+  depositToWallet
+);
 
 // GET /users/:id
 router.get(

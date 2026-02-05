@@ -5,45 +5,64 @@ import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { processReceiptImage } from '@/lib/ocr-utils'
 
 export default function UploadBillPage() {
     const navigate = useNavigate()
-    const [isScanning, setIsScanning] = useState(false)
     const [uploadedFile, setUploadedFile] = useState<File | null>(null)
     const [extractedData, setExtractedData] = useState<{ merchant: string; amount: string; date: string } | null>(null)
     const [loading, setLoading] = useState(false)
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setUploadedFile(e.target.files[0])
-            simulateExtraction()
+            const file = e.target.files[0]
+            setUploadedFile(file)
+            await handleExtraction(file)
         }
     }
 
-    const simulateExtraction = () => {
+    const handleExtraction = async (file: File) => {
         setLoading(true)
-        setTimeout(() => {
+        try {
+            const data = await processReceiptImage(file)
             setExtractedData({
-                merchant: 'Starbucks Coffee',
-                amount: '12.50',
-                date: '2026-02-04'
+                merchant: data.merchant,
+                amount: data.amount,
+                date: data.date
             })
+        } catch (error) {
+            console.error("Extraction failed", error)
+            // Ideally show toast error here
+        } finally {
             setLoading(false)
-        }, 1500)
+        }
     }
 
     const startCamera = () => {
-        setIsScanning(true)
-        setTimeout(() => {
-            setIsScanning(false)
-            setUploadedFile(new File([""], "camera-capture.jpg", { type: "image/jpeg" }))
-            simulateExtraction()
-        }, 2000)
+        // Trigger the file input with capture="environment" which acts as camera on mobile
+        // effectively same as clicking the upload input but we can try to force it via hidden input if needed
+        // For now, let's reuse the hidden file input but simulate a click on it
+         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+         if (fileInput) {
+             fileInput.click();
+         }
     }
 
     const handleSubmit = () => {
         // Here you would navigate to Add Expense with pre-filled data
-        navigate('/events/1/expenses/add', { state: { ...extractedData, receipt: uploadedFile } })
+        // Extract ID from current URL or assume it is passed or we need regex
+        // Current location is /events/:id/bill/upload. We want /events/:id/expenses/add
+        // We can use standard relative navigation or split current path
+        // Simplest: use relative path if Router supports it, or parse.
+        // Assuming we are at /events/:id/bill/upload, navigating to ../expenses/add works?
+        // Let's rely on splitting logical string for Hackathon speed as useParams might be available in context but hooks are top level.
+        // useParams IS available here? Yes.
+        // But wait, the route for this page needs to capture :id.
+        // Let's assume useParams() works if configured in App.tsx
+        // If useParams returns nothing, we fallback.
+        const pathParts = window.location.pathname.split('/');
+        const eventId = pathParts[2]; // /events/123/... -> 123
+        navigate(`/events/${eventId}/expenses/add`, { state: { ...extractedData, receipt: uploadedFile } })
     }
 
     return (
@@ -66,6 +85,7 @@ export default function UploadBillPage() {
                                 type="file"
                                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                 accept="image/*,.pdf"
+                                capture="environment"
                                 onChange={handleFileUpload}
                             />
                             <div className="flex flex-col items-center gap-4">
@@ -92,11 +112,11 @@ export default function UploadBillPage() {
                             className="w-full h-14 text-lg"
                             variant="outline"
                             onClick={startCamera}
-                            disabled={isScanning}
+                            disabled={loading}
                         >
-                            {isScanning ? (
+                            {loading ? (
                                 <span className="flex items-center gap-2 animate-pulse">
-                                    <ScanLine className="w-5 h-5" /> Scanning...
+                                    <ScanLine className="w-5 h-5" /> Processing...
                                 </span>
                             ) : (
                                 <span className="flex items-center gap-2">

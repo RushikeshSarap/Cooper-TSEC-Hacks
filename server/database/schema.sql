@@ -11,6 +11,9 @@ CREATE TABLE events (
     name VARCHAR(150) NOT NULL,
     description TEXT,
     created_by BIGINT NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    total_budget DECIMAL(10,2) DEFAULT 0.00,
     status ENUM('active', 'settled') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

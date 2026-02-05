@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { DollarSign, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
 
 const categoryIcons = [

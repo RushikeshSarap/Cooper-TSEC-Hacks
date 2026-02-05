@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import api from "@/services/api";
+import { eventService } from "@/services/event.service";
 import { WalletCard } from "@/components/dashboard/wallet-card";
 import { EventList } from "@/components/dashboard/event-list";
 import { CreateEventButton } from "@/components/dashboard/create-event-button";
@@ -15,28 +16,21 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // ✅ Axios instance with token
-  const api = axios.create({
-    baseURL: "http://localhost:5000/api/v1",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-});
-console.log(localStorage.getItem("token"));
+  const [loadingError, setLoadingError] = useState<string | null>(null);
 
   // ✅ Fetch user + events
   const fetchDashboardData = async () => {
     try {
-      const [userRes, eventRes] = await Promise.all([
-        api.get("/auth/me"),
-        api.get("/events"),
-      ]);
-
+      // Fetch user data directly via api service
+      const userRes = await api.get("/auth/me");
       setUser(userRes.data.user);
-      setEvents(eventRes.data.events || []);
-    } catch (err) {
+
+      // Fetch events via event service (handles mapping)
+      const eventsData = await eventService.getAll();
+      setEvents(eventsData);
+    } catch (err: any) {
       console.error("Dashboard fetch error:", err);
+      setLoadingError(err.message || "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -56,10 +50,41 @@ console.log(localStorage.getItem("token"));
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-destructive">
-          Failed to load user data. Please log in again.
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <GlassCard className="p-8 text-center max-w-sm w-full">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10 mb-4">
+            <svg viewBox="0 0 24 24" className="w-6 h-6 text-destructive" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold mb-2">Failed to load dashboard</h2>
+          <p className="text-muted-foreground text-sm mb-6">
+            We couldn't fetch your profile data. Please check your connection or try again.
+            <br />
+            <span className="text-xs text-destructive font-mono mt-2 block bg-destructive/5 p-2 rounded">
+              Error: {loadingError}
+            </span>
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors"
+            >
+              Retry
+            </button>
+            <button
+               onClick={() => {
+                 localStorage.removeItem("token");
+                 window.location.href = "/login";
+               }}
+               className="px-4 py-2 rounded-xl border border-border hover:bg-secondary transition-colors text-sm font-medium"
+            >
+              Log out
+            </button>
+          </div>
+        </GlassCard>
       </div>
     );
   }
@@ -125,10 +150,12 @@ console.log(localStorage.getItem("token"));
         />
 
         {/* Wallet Card */}
-        <WalletCard
-          balance={user.balance || 0}
-          walletAddress={user.walletAddress || "N/A"}
-        />
+        <div onClick={() => window.location.href = '/wallet'} className="cursor-pointer transition-transform hover:scale-[1.02]">
+            <WalletCard
+              balance={Number(user.wallet_balance || 0)}
+              walletAddress={user.walletAddress || "N/A"}
+            />
+        </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

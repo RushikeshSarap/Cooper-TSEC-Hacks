@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Check, FileSpreadsheet } from "lucide-react";
+import { Check, FileSpreadsheet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ExportCSVButtonProps {
@@ -12,7 +12,6 @@ interface ExportCSVButtonProps {
 
 export function ExportCSVButton({
   onExport,
-  filename = "export",
   className,
 }: ExportCSVButtonProps) {
   const [exported, setExported] = useState(false);

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { X, Shield, CheckCircle2, Loader2, AlertCircle, Fingerprint } from "lucide-react";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { UserAvatar } from "@/components/user-avatar";
-import { cn } from "@/lib/utils";
+
 
 interface PaymentAuthorizationModalProps {
   isOpen: boolean;

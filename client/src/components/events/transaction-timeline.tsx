@@ -3,7 +3,7 @@
 import { Receipt, ImageIcon, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { UserAvatar } from "@/components/user-avatar";
-import { cn } from "@/lib/utils";
+
 import type { Transaction } from "@/types";
 
 interface TransactionTimelineProps {

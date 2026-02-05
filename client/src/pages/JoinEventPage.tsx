@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
+import { eventService } from '@/services/event.service'
 import { ArrowLeft, Key, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,26 +35,33 @@ export default function JoinEventPage() {
         setError('')
         setLoading(true)
 
-        // Validate code format
-        const cleanCode = eventCode.replace('-', '')
-        if (cleanCode.length !== 6) {
-            setError('Event code must be 6 characters')
+        // Used directly as ID for now, as per plan
+        // The "code" is just the numeric ID in the backend currently
+        // If the user enters XXX-XXX, we might need to strip or parse if backend expects int
+        // But for now, let's assume valid ID input or strip non-numeric if we want strictly int
+
+        // Strategy: Try to join with the code as ID.
+        // If the input format was XXX-XXX, we remove hyphen.
+        // However, backend IDs are integers (1, 2, 3).
+        // Let's assume for this hackathon version, users enter the numeric ID.
+        // But the UI encourages 6 chars. 
+        // We'll strip hyphens and try sending that.
+
+        const cleanCode = eventCode.replace(/[^0-9]/g, '');
+
+        try {
+            await eventService.join(cleanCode);
+            setSuccess(true);
+            // Redirect after short delay
+            setTimeout(() => {
+                navigate(`/events/${cleanCode}`)
+            }, 1000)
+        } catch (err) {
+            console.error(err);
+            setError('Failed to join event. Invalid code or already joined.');
+        } finally {
             setLoading(false)
-            return
         }
-
-        // Simulate API call - would call POST /api/v1/events/join
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-
-        // Mock success
-        const mockEventId = Math.random().toString(36).substring(7)
-        setSuccess(true)
-        setLoading(false)
-
-        // Redirect after short delay
-        setTimeout(() => {
-            navigate(`/events/${mockEventId}`)
-        }, 1500)
     }
 
     return (
@@ -116,7 +124,7 @@ export default function JoinEventPage() {
                                     type="submit"
                                     className="w-full h-12 text-base"
                                     loading={loading}
-                                    disabled={eventCode.replace('-', '').length !== 6}
+                                    disabled={!eventCode}
                                 >
                                     Join Event
                                 </GradientButton>

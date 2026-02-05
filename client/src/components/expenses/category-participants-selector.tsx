@@ -1,7 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { GlassCard } from "@/components/ui/glass-card";
+
 import { UserAvatar } from "@/components/user-avatar";
 import { cn } from "@/lib/utils";
 import type { User } from "@/types";

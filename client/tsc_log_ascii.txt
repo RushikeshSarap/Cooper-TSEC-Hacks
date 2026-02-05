@@ -1,0 +1,14 @@
+src/components/events/event-form.tsx(3,1): error TS6133: 'useState' is declared but its value is never read.
+src/components/events/event-header.tsx(22,9): error TS6133: 'statusStyles' is declared but its value is never read.
+src/components/events/rule-builder.tsx(6,1): error TS6133: 'Label' is declared but its value is never read.
+src/components/events/transaction-timeline.tsx(6,1): error TS6133: 'cn' is declared but its value is never read.
+src/components/expenses/category-form.tsx(3,1): error TS6133: 'useState' is declared but its value is never read.
+src/components/expenses/category-form.tsx(7,1): error TS6133: 'GlassCard' is declared but its value is never read.
+src/components/expenses/category-participants-selector.tsx(4,1): error TS6133: 'GlassCard' is declared but its value is never read.
+src/components/payments/deposit-form.tsx(6,1): error TS6133: 'Label' is declared but its value is never read.
+src/components/payments/export-csv-button.tsx(4,10): error TS6133: 'Download' is declared but its value is never read.
+src/components/payments/export-csv-button.tsx(15,3): error TS6133: 'filename' is declared but its value is never read.
+src/components/payments/payment-authorization-modal.tsx(7,1): error TS6133: 'cn' is declared but its value is never read.
+src/components/payments/rule-validation-alert.tsx(3,48): error TS6133: 'Info' is declared but its value is never read.
+src/components/payments/settlement-breakdown-table.tsx(7,1): error TS6133: 'cn' is declared but its value is never read.
+src/components/theme-provider.tsx(3,1): error TS6133: 'React' is declared but its value is never read.

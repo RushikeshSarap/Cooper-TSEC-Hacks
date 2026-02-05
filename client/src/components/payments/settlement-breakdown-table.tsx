@@ -4,7 +4,7 @@ import { ArrowRight, Download } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { UserAvatar } from "@/components/user-avatar";
-import { cn } from "@/lib/utils";
+
 import type { User } from "@/types";
 
 interface Settlement {

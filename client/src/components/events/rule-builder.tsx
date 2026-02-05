@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, Trash2, Shield, DollarSign, Clock, CheckSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Switch } from "@/components/ui/switch";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
