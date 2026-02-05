@@ -28,8 +28,8 @@ export function LoginForm() {
     setSuccess(null);
 
     try {
-      // ✅ Use centralized API service with proper endpoint
-      const response = await api.post("/auth/login", {
+      // ✅ Use relative path without leading slash
+      const response = await api.post("auth/login", {
         email: formData.email,
         password: formData.password,
       });

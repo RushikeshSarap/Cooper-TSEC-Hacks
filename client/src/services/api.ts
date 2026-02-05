@@ -1,7 +1,8 @@
 import axios from "axios";
 
-// Get API URL from environment with fallback
-const BACKEND_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+// Get API URL from environment with fallback (ensuring trailing slash)
+const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const BACKEND_API_URL = envUrl.endsWith('/') ? envUrl : `${envUrl}/`;
 
 // Enforce HTTPS in production
 const isProduction = import.meta.env.PROD;

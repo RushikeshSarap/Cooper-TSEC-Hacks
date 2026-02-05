@@ -8,7 +8,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router-dom"; // ✅ Use useNavigate from react-router-dom
 
 // ✅ If using Next.js, use `next/link` instead:
 // import Link from "next/link"
@@ -24,6 +24,7 @@ export function RegisterForm() {
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // ✅ Backend connection using centralized API service
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,8 +40,8 @@ export function RegisterForm() {
     }
 
     try {
-      // ✅ Use centralized API service
-      const response = await api.post("/auth/register", {
+      // ✅ Use relative path without leading slash
+      const response = await api.post("auth/register", {
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -56,7 +57,11 @@ export function RegisterForm() {
           password: "",
           confirmPassword: "",
         });
-        window.location.href = "/login"; // Redirect to login on success
+        
+        // Use navigate for SPA transition
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
     } catch (err: any) {
       // ✅ Handle network errors specifically

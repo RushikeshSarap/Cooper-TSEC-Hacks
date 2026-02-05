@@ -1,3 +1,5 @@
+import api from "./api";
+
 interface PaymentResponse {
     success: boolean;
     transactionId?: string;
@@ -20,29 +22,19 @@ export const FinternetService = {
         console.log(`[Finternet] Initiating payment: ${amount} ${currency} - ${description}`);
         
         try {
-            // Call OUR Backend which calls Finternet
-            const token = localStorage.getItem("token");
-            
-            // Use relative path if proxied, or correct localhost port
-            const response = await fetch(`/api/v1/wallet/deposit`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': token ? `Bearer ${token}` : '',
-                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    amount,
-                    currency,
-                    description,
-                })
+            // ✅ Use centralized API service for consistency and correct routing
+            const response = await api.post("wallet/deposit", {
+                amount,
+                currency,
+                description,
             });
 
-            if (!response.ok) {
+            if (response.status !== 200 && response.status !== 201) {
                 console.warn("[Finternet] Backend request failed");
                 throw new Error(`API Error: ${response.statusText}`);
             }
 
-            const data = await response.json();
+            const data = response.data;
             return {
                 success: true,
                 transactionId: data.intentId || "txn_backend",

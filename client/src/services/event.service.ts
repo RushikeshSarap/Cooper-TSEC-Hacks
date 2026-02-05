@@ -29,13 +29,13 @@ const mapCategory = (data: any): any => ({
 export const eventService = {
     // Get all events for the current user
     getAll: async (): Promise<Event[]> => {
-        const response = await api.get("/events");
+        const response = await api.get("events");
         return response.data.map(mapEvent);
     },
 
     // Get single event by ID
     getById: async (id: string): Promise<Event> => {
-        const response = await api.get(`/events/${id}`);
+        const response = await api.get(`events/${id}`);
         return mapEvent(response.data);
     },
 
@@ -47,18 +47,18 @@ export const eventService = {
         endDate?: string;
         budget?: number; // Backend might not support this yet, but we'll send it
     }): Promise<{ eventId: string }> => {
-        const response = await api.post("/events", data);
+        const response = await api.post("events", data);
         return response.data;
     },
 
     // Join event by ID (Code)
     join: async (eventId: string): Promise<void> => {
-        await api.post(`/events/${eventId}/join`);
+        await api.post(`events/${eventId}/join`);
     },
 
     // Get participants
     getParticipants: async (eventId: string): Promise<Participant[]> => {
-        const response = await api.get(`/events/${eventId}/participants`);
+        const response = await api.get(`events/${eventId}/participants`);
         // Note: Backend currently returns array of { user_id }, might need enrichment
         // For now, we'll return what we get or map if backend changes
         return response.data;
@@ -66,29 +66,29 @@ export const eventService = {
 
     // Get payments/expenses
     getPayments: async (eventId: string): Promise<Transaction[]> => {
-        const response = await api.get(`/events/${eventId}/payments`);
+        const response = await api.get(`events/${eventId}/payments`);
         return response.data;
     },
 
     // Get categories
     getCategories: async (eventId: string): Promise<any[]> => {
-        const response = await api.get(`/events/${eventId}/categories`);
+        const response = await api.get(`events/${eventId}/categories`);
         return response.data.map(mapCategory);
     },
 
     // Add Expense (Manual)
     addExpense: async (eventId: string, data: any): Promise<void> => {
-        await api.post(`/events/${eventId}/expenses`, data);
+        await api.post(`events/${eventId}/expenses`, data);
     },
 
     // Delete Event
     delete: async (eventId: string): Promise<void> => {
-        await api.delete(`/events/${eventId}`);
+        await api.delete(`events/${eventId}`);
     },
 
     // Update Event
     update: async (eventId: string, data: any): Promise<void> => {
-        await api.put(`/events/${eventId}`, data);
+        await api.put(`events/${eventId}`, data);
     },
 
     // Invite User
@@ -99,16 +99,16 @@ export const eventService = {
         // Let's assume for now we need to ask backend to invite by email if possible?
         // Current backend invites by userId. 
         // We'll search first.
-        const searchRes = await api.get(`/users/search?email=${email}`);
+        const searchRes = await api.get(`users/search?email=${email}`);
         if (!searchRes.data || searchRes.data.length === 0) {
             throw new Error("User not found");
         }
         const userId = searchRes.data[0].id;
-        await api.post(`/events/${eventId}/invite`, { userId });
+        await api.post(`events/${eventId}/invite`, { userId });
     },
 
     // Add Category
     addCategory: async (eventId: string, name: string): Promise<void> => {
-        await api.post(`/events/${eventId}/categories`, { name });
+        await api.post(`events/${eventId}/categories`, { name });
     }
 };
