@@ -96,16 +96,20 @@ app.use("/api", (req: Request, res: Response) => {
 ========================= */
 
 // All other GET requests not handled before will return our React app
-app.get("/:path*", (req: Request, res: Response) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"), (err) => {
-    if (err) {
-      // If index.html is missing (e.g. no build), fall back to 404 JSON
-      res.status(404).json({
-        error: "Client build not found. Please run 'npm run build' in the client directory.",
-        path: req.originalUrl
-      });
-    }
-  });
+// We use app.use without a path to avoid path-to-regexp parsing errors in Express 5
+app.use((req: Request, res: Response, next) => {
+  // Only handle GET requests that aren't for the API
+  if (req.method === "GET" && !req.path.startsWith("/api")) {
+    return res.sendFile(path.join(clientBuildPath, "index.html"), (err) => {
+      if (err) {
+        res.status(404).json({
+          error: "Client build not found. Please run 'npm run build' in the client directory.",
+          path: req.originalUrl
+        });
+      }
+    });
+  }
+  next();
 });
 
 /* =========================
