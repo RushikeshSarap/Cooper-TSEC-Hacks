@@ -6,26 +6,36 @@ import pool from "../config/db.config.js";
 /* ================= REGISTER ================= */
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
-  console.log(req.body);
+
   try {
-    // ✅ Check required fields
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Save user
-    await pool.query(
-      "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+    // ✅ Postgres placeholders + RETURNING
+    const result = await pool.query(
+      `INSERT INTO users (name, email, password_hash)
+       VALUES ($1, $2, $3)
+       RETURNING id`,
       [name, email, hashedPassword]
     );
 
-    console.log("Created user");
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (err) {
+    console.log("Created user:", result.rows[0].id);
+
+    res.status(201).json({
+      message: "User registered successfully",
+      userId: result.rows[0].id,
+    });
+
+  } catch (err: any) {
     console.error("Registration error:", err);
+
+    if (err.code === "23505") {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
     res.status(500).json({ message: "Registration failed" });
   }
 };
@@ -33,29 +43,31 @@ export const register = async (req: Request, res: Response) => {
 /* ================= LOGIN ================= */
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log(req.body);
 
   try {
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const [rows]: any = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    // ✅ Postgres query
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
 
-    if (!rows || rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const user = rows[0];
+    const user = result.rows[0];
 
-    // ✅ FIXED: compare with user.password_hash
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined in environment variables");
+      throw new Error("JWT_SECRET is missing");
     }
 
     const token = jwt.sign(
@@ -73,24 +85,27 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
       },
     });
+
   } catch (err: any) {
     console.error("Login error:", err);
-    return res.status(500).json({ message: "Login failed", error: err.message });
+    return res.status(500).json({ message: "Login failed" });
   }
 };
 
 /* ================= GET ME ================= */
 export const getMe = async (req: Request, res: Response) => {
-  console.log("Auth Controller: getMe called"); // DEBUG
   try {
     const userId = (req as any).user.id;
-    console.log("Auth Controller: userId:", userId); // DEBUG
-    const [rows]: any = await pool.query(
-      "SELECT id, name, email FROM users WHERE id = ?",
+
+    const result = await pool.query(
+      "SELECT id, name, email FROM users WHERE id = $1",
       [userId]
     );
-    res.json({ user: rows[0] });
+
+    res.json({ user: result.rows[0] });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Failed to fetch user" });
   }
 };

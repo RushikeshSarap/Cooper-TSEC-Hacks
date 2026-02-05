@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
-import type  { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import type { AuthJwtPayload } from "../types/auth.types.js";
-
 
 // extend Request type
 declare module "express-serve-static-core" {
@@ -10,37 +9,32 @@ declare module "express-serve-static-core" {
   }
 }
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers.authorization;
-  console.log("Auth Middleware: Header:", authHeader); // DEBUG
+
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.log("Auth Middleware: No Bearer token found"); // DEBUG
     return res.status(401).json({ message: "No token provided" });
   }
 
-  // extract token (could be undefined)
   const token = authHeader.split(" ")[1];
-  if (typeof token !== "string" || token.length === 0) {
+  if (!token) {
     return res.status(401).json({ message: "Invalid token" });
   }
 
   const secretKey = process.env.JWT_SECRET;
-  if (typeof secretKey !== "string" || secretKey.length === 0) {
-    console.error("JWT_SECRET missing");
+  if (!secretKey) {
     return res.status(500).json({ message: "Server configuration error" });
   }
 
   try {
-    // TS now knows token and secretKey are strings
-
-const decoded = jwt.verify(
-  token,
-  process.env.JWT_SECRET!
-) as AuthJwtPayload;
-
-req.user = decoded;
+    const decoded = jwt.verify(token, secretKey) as AuthJwtPayload;
+    req.user = decoded;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

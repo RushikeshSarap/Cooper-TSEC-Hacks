@@ -8,7 +8,7 @@ const runMigration = async () => {
             await db.query(`ALTER TABLE payments ADD COLUMN description VARCHAR(255);`);
             console.log("✅ Added description to payments");
         } catch (e: any) {
-            if (e.code === 'ER_DUP_FIELDNAME') console.log("ℹ️ description already exists");
+            if (e.code === '42701') console.log("ℹ️ description already exists");
             else console.error("❌ Failed to add description:", e.message);
         }
 

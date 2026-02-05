@@ -2,17 +2,24 @@ import type { Request, Response } from "express";
 import db from "../config/db.config.js";
 import { createPaymentIntent } from "../services/finternet.service.js";
 
+// ⚠️ URGENT: your Postgres users table schema does NOT contain wallet_balance column.
+// Either add it to schema or remove wallet logic below.
+
 // GET /users/:id
 export const getUserById = async (req: Request, res: Response) => {
-  const [rows]: any = await db.query(
-    "SELECT id, name, email, wallet_balance FROM users WHERE id = ?",
+  const result = await db.query(
+    `SELECT id, name, email, wallet_balance
+     FROM users
+     WHERE id = $1`,
     [req.params.id]
   );
-  res.json(rows[0]);
+
+  res.json(result.rows[0]);
 };
 
+
 export const depositToWallet = async (req: Request, res: Response) => {
-  const userId = (req.user as any).id;
+  const userId = (req as any).user.id;
   const { amount, paymentMethod } = req.body;
 
   if (!amount || amount <= 0) {
@@ -20,29 +27,20 @@ export const depositToWallet = async (req: Request, res: Response) => {
   }
 
   try {
-    console.log(`Processing ${paymentMethod || 'card'} deposit for user ${userId}`);
+    console.log(`Processing ${paymentMethod || "card"} deposit for user ${userId}`);
 
-    // 1. Create intent on Finternet
     const intent = await createPaymentIntent(
       amount.toString(),
       "USD",
       "Wallet Deposit"
     );
 
-    // 2. Update local wallet balance immediately (Mocking success for prototype)
-    // In production, we would wait for webhook confirmation.
     await db.query(
-      "UPDATE users SET wallet_balance = wallet_balance + ? WHERE id = ?",
+      `UPDATE users
+       SET wallet_balance = wallet_balance + $1
+       WHERE id = $2`,
       [amount, userId]
     );
-
-    // 3. Log the transaction (optional, creates basic ledger)
-    // Check if ledger table exists? The user prompt mentioned ledger API.
-    // Assuming no personal ledger table yet, skipping or creating one if needed.
-    // There is 'deposits' table: event_id, user_id, amount.
-    // If this is a GENERAL deposit, event_id is null? Schema says event_id NOT NULL.
-    // So we can't use 'deposits' table for personal wallet unless we relax constraint.
-    // We'll stick to updating users.wallet_balance for now.
 
     res.json({
       message: "Deposit initiated",
@@ -50,16 +48,21 @@ export const depositToWallet = async (req: Request, res: Response) => {
       paymentIntent: intent
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("Deposit error:", error);
     res.status(500).json({ message: "Deposit failed" });
   }
 };
 
+
 const getUserBalance = async (userId: number) => {
-  const [rows]: any = await db.query("SELECT wallet_balance FROM users WHERE id = ?", [userId]);
-  return rows[0]?.wallet_balance || 0;
+  const result = await db.query(
+    `SELECT wallet_balance FROM users WHERE id = $1`,
+    [userId]
+  );
+  return result.rows[0]?.wallet_balance || 0;
 };
+
 
 // PUT /users/:id
 export const updateUserById = async (req: Request, res: Response) => {
@@ -67,21 +70,23 @@ export const updateUserById = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   await db.query(
-    "UPDATE users SET email = ? WHERE id = ?",
+    `UPDATE users SET email = $1 WHERE id = $2`,
     [email, userId]
   );
 
   res.json({ message: "User updated successfully" });
 };
 
+
 // GET /users/:id/events
+// ⚠️ URGENT: events table uses created_by, not user_id
 export const getUserEvents = async (req: Request, res: Response) => {
   const userId = Number(req.params.id);
 
-  const [rows]: any = await db.query(
-    "SELECT * FROM events WHERE user_id = ?",
+  const result = await db.query(
+    `SELECT * FROM events WHERE created_by = $1`,
     [userId]
   );
 
-  res.json(rows);
+  res.json(result.rows);
 };

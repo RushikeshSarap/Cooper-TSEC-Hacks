@@ -9,17 +9,17 @@ export const isEventParticipant = async (
   const { categoryId } = req.params;
   const userId = req.user!.id;
 
-  const [rows]: any = await db.query(
+  const result = await db.query(
     `
     SELECT ep.id
     FROM event_participants ep
     JOIN expense_categories ec ON ec.event_id = ep.event_id
-    WHERE ec.id = ? AND ep.user_id = ?
+    WHERE ec.id = $1 AND ep.user_id = $2
     `,
     [categoryId, userId]
   );
 
-  if (!rows.length) {
+  if (result.rows.length === 0) {
     return res.status(403).json({ message: "Not an event participant" });
   }
 

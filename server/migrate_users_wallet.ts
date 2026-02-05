@@ -9,7 +9,7 @@ const runMigration = async () => {
             await db.query(`ALTER TABLE users ADD COLUMN wallet_balance DECIMAL(10,2) DEFAULT 0.00;`);
             console.log("✅ Added wallet_balance to users");
         } catch (e: any) {
-            if (e.code === 'ER_DUP_FIELDNAME') console.log("ℹ️ wallet_balance already exists");
+            if (e.code === '42701') console.log("ℹ️ wallet_balance already exists");
             else console.error("❌ Failed to add wallet_balance:", e.message);
         }
 

@@ -1,4 +1,3 @@
--- SQLINES FOR EVALUATION USE ONLY (14 DAYS)
 CREATE TABLE users (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(100) NOT NULL,
@@ -6,6 +5,11 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE users
+ADD COLUMN wallet_balance DECIMAL(10,2) DEFAULT 0.00;
+
+
 
 CREATE TABLE events (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -113,7 +117,7 @@ CREATE TABLE payment_rules (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     event_id BIGINT NOT NULL,
     max_amount DECIMAL(10,2),
-    allowed_roles VARCHAR(50), -- SQLINES DEMO *** ember'
+    allowed_roles VARCHAR(50), -- e.g., 'organizer', 'member'
     approval_required BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_rule_event
