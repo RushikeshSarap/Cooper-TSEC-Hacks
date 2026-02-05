@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Send, Loader2, Sparkles } from "lucide-react";
 import api from "@/services/api";
 
@@ -52,9 +51,9 @@ export function Chatbot() {
     };
 
     return (
-        <div className="w-full max-w-3xl mx-auto">
+        <div className="flex flex-col h-full w-full max-w-3xl mx-auto">
             {/* Chat Messages */}
-            <Card className="mb-4 p-6 min-h-[500px] max-h-[600px] overflow-y-auto bg-card/50 backdrop-blur-sm border-border/50">
+            <div className="flex-1 min-h-0 mb-4 p-4 overflow-y-auto bg-card/30 backdrop-blur-sm border border-border/50 rounded-2xl scrollbar-thin">
                 {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
                         <Sparkles className="w-12 h-12 mb-4 text-primary/50" />
@@ -94,8 +93,8 @@ export function Chatbot() {
                         )}
                     </div>
                 )}
-            </Card>
-
+            </div>
+ 
             {/* Input Area */}
             <div className="flex gap-2">
                 <Input

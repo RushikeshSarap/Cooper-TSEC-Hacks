@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Chatbot } from '@/components/chatbot'
-import { MessageSquare, X } from 'lucide-react'
+import { MessageSquare, X, Sparkles } from 'lucide-react'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -55,14 +55,17 @@ function App() {
                 {/* Global Chatbot Widget */}
                 <div className="fixed bottom-6 right-6 z-50">
                     {isChatOpen ? (
-                        <div className="bg-background border border-border/50 rounded-2xl shadow-2xl w-[350px] md:w-[400px] h-[500px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-                            <div className="p-4 gradient-primary flex items-center justify-between text-white">
-                                <span className="font-semibold">SplitFlow AI Assistant</span>
+                        <div className="bg-background/95 border border-border/50 rounded-2xl shadow-2xl w-[90vw] max-w-[400px] h-[550px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300 backdrop-blur-md">
+                            <div className="p-4 gradient-primary flex items-center justify-between text-white shrink-0">
+                                <span className="font-semibold flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4" />
+                                    SplitFlow AI Assistant
+                                </span>
                                 <button onClick={() => setIsChatOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-4">
+                            <div className="flex-1 overflow-hidden p-4">
                                 <Chatbot />
                             </div>
                         </div>
