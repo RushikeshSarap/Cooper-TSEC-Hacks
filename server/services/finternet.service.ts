@@ -108,18 +108,18 @@ export const getEscrowDetails = async (intentId: string): Promise<EscrowDetails>
 /**
  * Get Account Balance
  */
-export const getAccountBalance = async (): Promise<{ available: number; pending: number; currency: string }> => {
+export const getAccountBalance = async (): Promise<{ available: number; pending: number; currency: string; balance: number }> => {
     try {
         const res = await axios.get(`${BASE_URL}/payment-intents/account/balance`, {
             headers: { "X-API-Key": API_KEY }
         });
         // Assuming response structure based on common patterns, adjusting as needed if specific JSON structure differs slightly
         // The user provided prompt implies "Get Balance of a Merchant"
-        return res.data.data || { available: 0, pending: 0, currency: 'USD' }; 
+        return res.data.data || { available: 0, pending: 0, currency: 'USD', balance: 0 }; 
     } catch (err: any) {
         console.error("Finternet Get Balance Error:", err.response?.data || err.message);
         // Fallback for demo if API fails
-        return { available: 1250.00, pending: 0, currency: 'USD' };
+        return { available: 1250.00, pending: 0, currency: 'USD' , balance: 1250.00};
     }
 }
 

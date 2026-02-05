@@ -1,6 +1,8 @@
 import type { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 import type  { Request, Response, NextFunction } from "express";
+import type { AuthJwtPayload } from "../types/auth.types";
+
 
 // extend Request type
 declare module "express-serve-static-core" {
@@ -31,8 +33,13 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 
   try {
     // TS now knows token and secretKey are strings
-    const decoded = jwt.verify(token, secretKey);
-    req.user = decoded;
+
+const decoded = jwt.verify(
+  token,
+  process.env.JWT_SECRET!
+) as AuthJwtPayload;
+
+req.user = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });

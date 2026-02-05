@@ -23,6 +23,7 @@ export class PaymentService {
       throw new Error("Insufficient pooled balance");
     }
 
+    
     // 3️⃣ Call Finternet payment API (TODO)
     // 4️⃣ Deduct from wallet
     await WalletService.deduct(eventId, amount);

@@ -43,7 +43,13 @@ export interface AuthResponse {
    JWT Payload
 ========================= */
 
-export interface JwtPayload {
-  userId: string;
-  email?: string;
+// export interface JwtPayload {
+//   userId: string;
+//   email?: string;
+// }
+import type { JwtPayload } from "jsonwebtoken";
+
+export interface AuthJwtPayload extends JwtPayload {
+  id: number;
+  email: string;
 }

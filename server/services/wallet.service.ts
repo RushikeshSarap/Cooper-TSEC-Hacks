@@ -4,13 +4,15 @@ export interface Wallet {
   available: number;
   pending: number;
   currency: string;
+  balance: number;
 }
+
 
 export class WalletService {
   /**
    * Get the current user/merchant wallet balance from Finternet
    */
-  static async getWallet(): Promise<Wallet> {
+  static async getWallet(userId?: string): Promise<Wallet> {
      // In a real app, you might look up the specific merchant ID for the user
      // For this hackathon, we assume a single merchant account
      return await getAccountBalance();
