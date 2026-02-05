@@ -13,12 +13,12 @@ export const requireEventParticipant = async (
     return res.status(400).json({ message: "Invalid event ID" });
   }
 
-  const [rows]: any = await db.query(
-    "SELECT 1 FROM event_participants WHERE event_id = ? AND user_id = ?",
+  const result = await db.query(
+    "SELECT 1 FROM event_participants WHERE event_id = $1 AND user_id = $2",
     [eventId, userId]
   );
 
-  if (!rows.length) {
+  if (result.rows.length === 0) {
     return res.status(403).json({ message: "Not a participant" });
   }
 

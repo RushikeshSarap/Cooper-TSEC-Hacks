@@ -1,55 +1,35 @@
-import { Link } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus, Key, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { GradientButton } from '@/components/ui/gradient-button'
 import { EventList } from '@/components/dashboard/event-list'
+import { eventService } from '@/services/event.service'
 import type { Event } from '@/types'
 
-// Mock events data
-const mockCreatedEvents: Event[] = [
-    {
-        id: "1",
-        name: "Ski Trip 2026",
-        description: "Annual winter ski trip to Aspen",
-        startDate: "2026-02-15",
-        status: "active",
-        totalBudget: 5000,
-        currentSpent: 3250,
-        participantCount: 6,
-        createdBy: "1",
-        createdAt: "2026-01-10",
-    },
-    {
-        id: "2",
-        name: "Office Party",
-        description: "Q1 Team celebration dinner",
-        startDate: "2026-02-28",
-        status: "active",
-        totalBudget: 1500,
-        currentSpent: 450,
-        participantCount: 12,
-        createdBy: "1",
-        createdAt: "2026-02-01",
-    },
-]
-
-const mockJoinedEvents: Event[] = [
-    {
-        id: "3",
-        name: "Beach Vacation",
-        description: "Summer getaway to Malibu",
-        startDate: "2025-08-10",
-        status: "settled",
-        totalBudget: 8000,
-        currentSpent: 7650,
-        participantCount: 4,
-        createdBy: "2",
-        createdAt: "2025-07-01",
-    },
-]
-
 export default function EventsPage() {
+    const [events, setEvents] = useState<Event[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const data = await eventService.getAll();
+                setEvents(data);
+            } catch (error) {
+                console.error("Failed to fetch events:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchEvents();
+    }, []);
+
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center">Loading events...</div>
+    }
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
@@ -122,18 +102,9 @@ export default function EventsPage() {
                 {/* Events I Created */}
                 <div>
                     <EventList
-                        events={mockCreatedEvents}
-                        title="Events I Created"
-                        emptyMessage="You haven't created any events yet"
-                    />
-                </div>
-
-                {/* Events I Joined */}
-                <div>
-                    <EventList
-                        events={mockJoinedEvents}
-                        title="Events I Joined"
-                        emptyMessage="You haven't joined any events yet"
+                        events={events}
+                        title="Your Events"
+                        emptyMessage="You haven't joined or created any events yet"
                     />
                 </div>
             </main>

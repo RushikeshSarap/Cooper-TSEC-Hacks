@@ -13,12 +13,12 @@ export const requireEventOwner = async (
     return res.status(400).json({ message: "Invalid event ID" });
   }
 
-  const [rows]: any = await db.query(
-    "SELECT created_by FROM events WHERE id = ?",
+  const result = await db.query(
+    "SELECT created_by FROM events WHERE id = $1",
     [eventId]
   );
 
-  if (!rows.length || rows[0].created_by !== userId) {
+  if (result.rows.length === 0 || result.rows[0].created_by !== userId) {
     return res.status(403).json({ message: "Forbidden" });
   }
 
