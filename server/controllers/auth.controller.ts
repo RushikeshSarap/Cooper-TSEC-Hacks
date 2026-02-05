@@ -12,17 +12,23 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // ✅ Data normalization
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    console.log(`[Registration] Attempt for: ${normalizedEmail}`);
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // ✅ Postgres placeholders + RETURNING
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash)
        VALUES ($1, $2, $3)
-       RETURNING id`,
-      [name, email, hashedPassword]
+       RETURNING id, email`,
+      [normalizedName, normalizedEmail, hashedPassword]
     );
 
-    console.log("Created user:", result.rows[0].id);
+    console.log(`✅ [Registration] Success: ID ${result.rows[0].id}, Email: ${result.rows[0].email}`);
 
     res.status(201).json({
       message: "User registered successfully",
@@ -30,7 +36,7 @@ export const register = async (req: Request, res: Response) => {
     });
 
   } catch (err: any) {
-    console.error("Registration error:", err);
+    console.error(`❌ [Registration] Error for ${email}:`, err.message);
 
     if (err.code === "23505") {
       return res.status(400).json({ message: "Email already exists" });
@@ -49,13 +55,19 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
+    // ✅ Data normalization
+    const normalizedEmail = email.trim().toLowerCase();
+    
+    console.log(`[Login] Attempt for: ${normalizedEmail}`);
+
     // ✅ Postgres query
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1",
-      [email]
+      [normalizedEmail]
     );
 
     if (result.rows.length === 0) {
+      console.warn(`⚠️ [Login] User not found: ${normalizedEmail}`);
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -63,10 +75,12 @@ export const login = async (req: Request, res: Response) => {
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
+      console.warn(`⚠️ [Login] Password mismatch for: ${normalizedEmail}`);
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     if (!process.env.JWT_SECRET) {
+      console.error("❌ [Login] Internal Error: JWT_SECRET is missing");
       throw new Error("JWT_SECRET is missing");
     }
 
@@ -75,6 +89,8 @@ export const login = async (req: Request, res: Response) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
+
+    console.log(`✅ [Login] Success: ${normalizedEmail} (ID: ${user.id})`);
 
     return res.status(200).json({
       message: "Login successful",
@@ -87,7 +103,7 @@ export const login = async (req: Request, res: Response) => {
     });
 
   } catch (err: any) {
-    console.error("Login error:", err);
+    console.error(`❌ [Login] Error for ${email}:`, err.message);
     return res.status(500).json({ message: "Login failed" });
   }
 };

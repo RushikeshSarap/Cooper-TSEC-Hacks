@@ -47,10 +47,9 @@ export function RegisterForm() {
         password: formData.password,
       });
 
-      // ✅ Example success response
+      // ✅ Registration success handling
       if (response.status === 201 || response.status === 200) {
-        localStorage.setItem("token", response.data.token);
-        setSuccess("Account created successfully!");
+        setSuccess("Account created successfully! Redirecting to login...");
         setFormData({
           name: "",
           email: "",
@@ -61,7 +60,7 @@ export function RegisterForm() {
         // Use navigate for SPA transition
         setTimeout(() => {
           navigate("/login");
-        }, 1500);
+        }, 2000);
       }
     } catch (err: any) {
       // ✅ Handle network errors specifically
