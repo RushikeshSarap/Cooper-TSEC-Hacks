@@ -5,9 +5,7 @@ dotenv.config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production"
-    ? { rejectUnauthorized: false }
-    : false
+  ssl: { rejectUnauthorized: false }
 });
 
 export const connectDB = async () => {
@@ -20,6 +18,4 @@ export const connectDB = async () => {
   }
 };
 
-export default {
-  query: (text: string, params?: any[]) => pool.query(text, params)
-};
+export default pool;
