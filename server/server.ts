@@ -66,14 +66,45 @@ app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/wallet", walletRoutes);
 app.use("/api/v1", chatbotRoutes);
 
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /* =========================
-   404 Handler
+   Static Files & Client Routing
 ========================= */
 
-app.use((req: Request, res: Response) => {
+// Serve static files from the client/dist directory
+const clientBuildPath = path.join(__dirname, "../client/dist");
+app.use(express.static(clientBuildPath));
+
+/* =========================
+   404 Handler (API Only)
+========================= */
+
+app.use("/api", (req: Request, res: Response) => {
   res.status(404).json({
-    error: "Route not found",
+    error: "API Route not found",
     path: req.originalUrl
+  });
+});
+
+/* =========================
+   Catch-all Route (SPA Support)
+========================= */
+
+// All other GET requests not handled before will return our React app
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(path.join(clientBuildPath, "index.html"), (err) => {
+    if (err) {
+      // If index.html is missing (e.g. no build), fall back to 404 JSON
+      res.status(404).json({
+        error: "Client build not found. Please run 'npm run build' in the client directory.",
+        path: req.originalUrl
+      });
+    }
   });
 });
 

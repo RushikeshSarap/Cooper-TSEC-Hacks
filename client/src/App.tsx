@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router'
+import { Routes, Route } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/error-boundary'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
