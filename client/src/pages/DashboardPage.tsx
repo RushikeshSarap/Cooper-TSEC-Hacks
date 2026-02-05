@@ -22,7 +22,7 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       // Fetch user data directly via api service
-      const userRes = await api.get("/auth/me");
+      const userRes = await api.get("auth/me");
       setUser(userRes.data.user);
 
       // Fetch events via event service (handles mapping)

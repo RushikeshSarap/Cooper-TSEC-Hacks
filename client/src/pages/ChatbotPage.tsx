@@ -15,7 +15,7 @@ export default function ChatbotPage() {
         // Basic auth check reused from Dashboard logic
         const fetchUser = async () => {
             try {
-                const res = await api.get("/auth/me");
+                const res = await api.get("auth/me");
                 setUser(res.data.user);
             } catch (error) {
                 console.error("Auth check failed:", error);

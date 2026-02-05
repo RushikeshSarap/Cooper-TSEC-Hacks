@@ -1,7 +1,9 @@
 import axios from "axios";
 
 // Get API URL from environment with fallback (ensuring trailing slash)
+// Get API URL from environment with fallback
 const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+// Ensure trailing slash for reliable relative path joining with axios
 const BACKEND_API_URL = envUrl.endsWith('/') ? envUrl : `${envUrl}/`;
 
 // Enforce HTTPS in production
@@ -60,9 +62,9 @@ api.interceptors.response.use(
 
 // Export auth endpoints for centralized management
 export const authEndpoints = {
-    login: `${API_URL}/auth/login`,
-    register: `${API_URL}/auth/register`,
-    logout: `${API_URL}/auth/logout`,
+    login: `${API_URL}auth/login`,
+    register: `${API_URL}auth/register`,
+    logout: `${API_URL}auth/logout`,
 };
 
 export default api;

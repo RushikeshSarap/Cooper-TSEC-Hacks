@@ -26,7 +26,7 @@ export function Chatbot() {
         setLoading(true);
 
         try {
-            const response = await api.post("/agent", { prompt: input });
+            const response = await api.post("agent", { prompt: input });
             const assistantMessage: Message = {
                 role: "assistant",
                 content: response.data.response,
