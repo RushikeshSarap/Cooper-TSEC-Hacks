@@ -9,6 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const BACKEND_AUTH_URL = process.env.BACKEND_AUTH_URL || "http://localhost:5000/api/v1/auth/register";
 
 // ✅ If using Next.js, use `next/link` instead:
 // import Link from "next/link"
@@ -40,7 +45,7 @@ export function RegisterForm() {
 
     try {
       // ✅ Change this URL to your backend endpoint
-      const response = await axios.post("http://localhost:5000/api/v1/auth/register", {
+      const response = await axios.post(BACKEND_AUTH_URL, {
         name: formData.name,
         email: formData.email,
         password: formData.password,

@@ -1,6 +1,11 @@
 import axios from "axios";
+import dotenv from "dotenv";
 
-export const API_URL = "http://localhost:5000/api/v1";
+dotenv.config();
+
+const BACKEND_API_URL = process.env.BACKEND_API_URL || "http://localhost:5000/api/v1";
+
+export const API_URL = BACKEND_API_URL;
 
 const api = axios.create({
     baseURL: API_URL,
