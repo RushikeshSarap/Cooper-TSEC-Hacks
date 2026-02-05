@@ -6,7 +6,6 @@ import type { AuthJwtPayload } from "../types/auth.types";
 // extend Request type
 declare module "express-serve-static-core" {
   interface Request {
-    id?: number;
     user?: AuthJwtPayload;
   }
 }

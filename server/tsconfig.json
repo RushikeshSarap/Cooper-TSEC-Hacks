@@ -2,8 +2,8 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "rootDir": "./",
-    "outDir": "./dist",
+    "rootDir": ".",
+    "outDir": "dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
@@ -35,6 +35,6 @@
     "verbatimModuleSyntax": true
   },
   "include": ["**/*.ts"],
-  "typeRoots": ["./src/types", "./node_modules/@types"],
+  "typeRoots": ["dist", "node_modules"],
   "exclude": ["server/node_modules", "dist"]
 }
