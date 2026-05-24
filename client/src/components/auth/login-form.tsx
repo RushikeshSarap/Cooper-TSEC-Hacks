@@ -37,6 +37,7 @@ export function LoginForm() {
       // ✅ If login successful
       if (response.status === 200) {
         const { token, user, message } = response.data;
+        console.log("✅ Login successful, saving token...");
 
         // ✅ Save token & user info to localStorage
         localStorage.setItem("token", token);
@@ -47,14 +48,17 @@ export function LoginForm() {
         // ✅ Redirect after short delay
         setTimeout(() => {
           navigate("/dashboard");
-        }, 1000);
+        }, 800);
       }
     } catch (err: any) {
+      console.error("❌ Login error:", err);
       // ✅ Handle network errors specifically
       if (err.isNetworkError) {
-        setError("Network error. Please check your internet connection and try again.");
+        setError("Network error: " + (err.message || "Please check your connection."));
       } else if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
+      } else if (err.response?.status) {
+        setError(`Server returned error ${err.response.status}. Please try again later.`);
       } else {
         setError("Login failed. Please check your credentials.");
       }

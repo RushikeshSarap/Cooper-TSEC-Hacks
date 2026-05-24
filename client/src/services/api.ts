@@ -51,6 +51,7 @@ api.interceptors.response.use(
         
         // Handle 401 Unauthorized
         if (error.response?.status === 401) {
+            console.warn("⚠️ 401 Unauthorized detected at:", window.location.pathname);
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             
@@ -61,7 +62,10 @@ api.interceptors.response.use(
                              error.config?.url?.includes("auth/register");
 
             if (!isAuthPath) {
+                console.log("🚀 Redirecting to /login...");
                 window.location.href = "/login";
+            } else {
+                console.log("🛑 401 on auth path - skipping redirect to avoid loop.");
             }
         }
         
